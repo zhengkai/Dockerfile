@@ -20,7 +20,7 @@ RUN apt-key add /tmp/nginx_signing.key
 
 COPY nginx.list /etc/apt/sources.list.d/nginx.list
 
-VOLUME ["/etc/nginx/sites-enabled", "/etc/nginx/certs", "/etc/nginx/conf.d", "/var/log/nginx", "/var/www/html", "/log"]
+VOLUME ["/etc/nginx/sites-enabled", "/etc/nginx/certs", "/etc/nginx/conf.d", "/var/log/nginx", "/var/www/html", "/log", "/www"]
 
 RUN apt-get update
 RUN apt-get install nginx

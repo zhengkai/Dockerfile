@@ -1,12 +1,6 @@
 #!/bin/bash
-
-DOCKER_NAME='nginx18'
-IMAGE_NAME='zhengkai/nginx'
-
 cd $(dirname `readlink -f $0`)
-
-sudo docker stop $DOCKER_NAME
-sudo docker rm $DOCKER_NAME
+. ./name.inc.sh
 
 build_param=''
 if [[ "${@: -1}" == "reset" ]]; then
