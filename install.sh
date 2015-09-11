@@ -1,10 +1,14 @@
 #!/bin/bash
+cd $(dirname `readlink -f $0`)
+. ./service.inc.sh
 
 data_base='/data'
 data_list=(
 	'nginx/log'
 	'nginx/tmp'
 	'nginx/vhost'
+	'nginx/conf'
+	'nginx/ssl'
 	'php/log'
 	'php/tmp'
 	'mysql/log'
@@ -21,12 +25,6 @@ sudo chown zhengkai:zhengkai -R $data_base
 sudo mkdir -p /www
 # sudo chown zhengkai:zhengkai -R /www
 
-service_list=(
-	'nginx'
-	'php'
-	'mysql'
-	'memcache'
-)
 for service in ${service_list[@]}; do
 	sudo docker stop $service 2>/dev/null
 	sudo docker rm $service 2>/dev/null
@@ -61,12 +59,12 @@ sudo docker run \
 sudo docker run \
 	--name nginx \
 	--link php:php \
-	-p 127.0.0.1:443:443 \
-	-p 127.0.0.1:80:80 \
+	-p 443:443 \
+	-p 80:80 \
 	-v /www:/www \
 	-v /data/nginx/vhost:/etc/nginx/sites-enabled \
 	-v /data/nginx/log:/log \
-	-v /etc/nginx/nginx.conf:/etc/nginx/nginx.conf \
+	-v /data/nginx/ssl:/etc/nginx/certs \
 	-v /tmp:/tmp \
 	-d \
 	zhengkai/nginx
