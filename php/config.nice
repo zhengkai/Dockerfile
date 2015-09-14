@@ -22,6 +22,7 @@
 '--with-curl' \
 '--with-mcrypt' \
 '--with-mhash' \
+'--with-mysqli' \
 '--with-gmp' \
 '--with-readline' \
 '--with-gettext' \

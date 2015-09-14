@@ -1,4 +1,4 @@
-DOCKER_NAME='php7'
+DOCKER_NAME='php'
 IMAGE_NAME='zhengkai/php'
 
 sudo docker stop $DOCKER_NAME 2>/dev/null
