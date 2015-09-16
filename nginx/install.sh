@@ -4,12 +4,12 @@ cd $(dirname `readlink -f $0`)
 
 sudo docker run \
 	--name $DOCKER_NAME \
-	-p 127.50.0.1:443:443 \
-	-p 127.50.0.1:80:80 \
+	-p 443:443 \
+	-p 80:80 \
 	-v /www:/www \
 	-v /data/nginx/vhost:/etc/nginx/sites-enabled \
 	-v /data/nginx/log:/log \
-	-v /etc/nginx/nginx.conf:/etc/nginx/nginx.conf \
+	-v /data/nginx/ssl:/etc/nginx/certs \
 	-v /tmp:/tmp \
 	-d \
 	$IMAGE_NAME

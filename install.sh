@@ -32,7 +32,6 @@ done
 
 sudo docker run \
 	--name memcache \
-	-p 127.0.0.1:11211:11211 \
 	-d \
 	memcached:latest
 
@@ -41,7 +40,6 @@ sudo docker run \
 	--env MYSQL_ROOT_PASSWORD=t1oPR58DJDg6nFM8 \
 	-v /data/mysql/log:/var/log/mysql \
 	-v /data/mysql/data:/var/lib/mysql \
-	-p 127.0.0.1:3306:3306 \
 	-d \
 	mysql:latest
 
@@ -49,7 +47,6 @@ sudo docker run \
 	--name php \
 	--link mysql:mysql \
 	--link memcache:memcache \
-	-p 127.0.0.1:9000:9000 \
 	-v /www:/www \
 	-v /data/php/log:/var/log/php \
 	-v /tmp:/tmp \
