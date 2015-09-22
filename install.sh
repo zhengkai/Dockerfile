@@ -13,6 +13,7 @@ data_list=(
 	'php/tmp'
 	'mysql/log'
 	'mysql/data'
+	'mysql/conf'
 )
 
 for dir in ${data_list[@]}; do
@@ -40,6 +41,7 @@ sudo docker run \
 	--env MYSQL_ROOT_PASSWORD=t1oPR58DJDg6nFM8 \
 	-v /data/mysql/log:/var/log/mysql \
 	-v /data/mysql/data:/var/lib/mysql \
+	-v /data/mysql/conf:/etc/mysql/conf.d \
 	-d \
 	mysql:latest
 

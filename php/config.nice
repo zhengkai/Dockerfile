@@ -18,6 +18,7 @@
 '--enable-bcmath' \
 '--enable-sockets' \
 '--enable-mbstring' \
+'--enable-fileinfo' \
 '--with-iconv' \
 '--with-curl' \
 '--with-mcrypt' \
