@@ -14,6 +14,8 @@ data_list=(
 	'mysql/log'
 	'mysql/data'
 	'mysql/conf'
+	'redis/log'
+	'redis/data'
 )
 
 for dir in ${data_list[@]}; do
@@ -35,6 +37,13 @@ sudo docker run \
 	--name memcache \
 	-d \
 	memcached:latest
+
+sudo docker run \
+	--name redis \
+	-v /data/redis/log:/var/log/redis \
+	-v /data/redis/data:/data \
+	-d \
+	redis:latest
 
 sudo docker run \
 	--name mysql \
