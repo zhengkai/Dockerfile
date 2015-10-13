@@ -1,4 +1,4 @@
-FROM ubuntu:vivid
+FROM debian:jessie
 
 ENV PHP_INI_DIR            /etc/php
 ENV PHP_CONF_DIR           $PHP_INI_DIR/conf.d
@@ -25,6 +25,7 @@ RUN apt-get install -y ca-certificates curl wget
 # deps
 #
 ENV PHPIZE_DEPS \
+	git \
 	autoconf \
 	file \
 	g++ \
@@ -56,7 +57,7 @@ RUN ln -s /usr/include/x86_64-linux-gnu/gmp.h /usr/include/gmp.h
 # php source
 #
 RUN set -x \
-	&& wget "https://downloads.php.net/~ab/php-7.0.0RC4.tar.gz" -O php.tar.gz \
+	&& wget -q "https://downloads.php.net/~ab/php-7.0.0RC4.tar.gz" -O php.tar.gz \
 	&& echo "4720f32d631cb81635998f775e1c6c22c1242193  php.tar.gz" | sha1sum -c \
 	&& mkdir -p /usr/src/php \
 	&& tar -xvf php.tar.gz -C /usr/src/php --strip-components=1 \
@@ -78,13 +79,57 @@ RUN cd /usr/src/php \
 	&& make install \
 	&& apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false -o APT::AutoRemove::SuggestsImportant=false $buildDeps
 
+#
 # ImageMagick
+#
 RUN apt-get install -y imagemagick
+
+#
+# Memcached
+#
+RUN git clone https://github.com/php-memcached-dev/php-memcached.git -b php7 /usr/src/php-memcached \
+	&& cd /usr/src/php-memcached \
+	&& phpize \
+	&& ./configure --disable-memcached-session --disable-memcached-sasl \
+	&& make -j"$(nproc)" \
+	&& make install \
+	&& rm -rf /usr/src/php-memcached
+
+#
+# Redis
+#
+RUN git clone https://github.com/phpredis/phpredis.git -b php7 /usr/src/phpredis \
+	&& cd /usr/src/phpredis \
+	&& phpize \
+	&& ./configure --disable-redis-session \
+	&& make -j"$(nproc)" \
+	&& make install \
+	&& rm -rf /usr/src/phpredis
+
+#
+# MongoDB
+#
+#RUN apt-get install -y libmongo-client-dev
+#RUN git clone https://github.com/mongodb-labs/mongo-php-driver-prototype.git -b PHP7 /usr/src/pecl-mongodb \
+#	&& cd /usr/src/pecl-mongodb \
+#	&& git submodule update --init \
+#	&& phpize \
+#	&& ./configure --without-openssl --without-mongodb-sasl \
+#	&& make -j"$(nproc)" \
+#	&& make install \
+#	&& rm -rf /usr/src/pecl-mongodb
+
+#	&& cd src/libbson \
+#	&& git pull origin master \
+#	&& cd ../.. \
+#	&& cd src/libmongoc \
+#	&& git pull origin master \
+#	&& cd ../.. \
 
 #
 # clean
 #
-RUN apt-get purge -y $PHPIZE_DEPS
+RUN apt-get purge -y $PHPIZE_DEPS 
 RUN apt-get -y autoremove
 RUN rm -rf /var/lib/apt/lists/*
 RUN rm -rf /usr/src/php
