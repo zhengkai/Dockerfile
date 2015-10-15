@@ -7,6 +7,6 @@ sudo docker run \
 	-p 127.0.0.1:9000:9000 \
 	-v /www:/www \
 	-v /data/php/log:/var/log/php \
-	-v /tmp:/tmp \
+	-v /data/php/tmp:/tmp \
 	-d \
 	$IMAGE_NAME

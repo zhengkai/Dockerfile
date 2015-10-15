@@ -60,7 +60,7 @@ sudo docker run \
 	--link memcache:memcache \
 	-v /www:/www \
 	-v /data/php/log:/var/log/php \
-	-v /tmp:/tmp \
+	-v /data/php/tmp:/tmp \
 	-d \
 	zhengkai/php
 
