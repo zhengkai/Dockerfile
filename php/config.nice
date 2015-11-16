@@ -29,9 +29,9 @@
 '--with-gettext' \
 '--with-zlib' \
 '--enable-opcache' \
+'--enable-phar' \
 '--enable-libxml' \
 '--enable-simplexml' \
-'--enable-sysvmsg' \
 '--enable-sysvsem' \
 '--enable-sysvshm' \
 '--enable-pdo' \

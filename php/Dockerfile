@@ -61,7 +61,7 @@ RUN set -x \
 	&& echo "ce20d42482ee97ce5e53cb8d5a5471ccbed738b4  php.tar.gz" | sha1sum -c \
 	&& mkdir -p /usr/src/php \
 	&& tar -xvf php.tar.gz -C /usr/src/php --strip-components=1 \
-	&& rm php.tar.gz*
+	&& rm php.tar.gz
 
 #
 # configure && make
@@ -94,6 +94,19 @@ RUN git clone https://github.com/php-memcached-dev/php-memcached.git -b php7 /us
 	&& make -j"$(nproc)" \
 	&& make install \
 	&& rm -rf /usr/src/php-memcached
+
+#
+# Msgpack
+#
+RUN wget -q "http://pecl.php.net/get/msgpack-2.0.0.tgz" -O php-msgpack.tgz \
+	&& mkdir /usr/src/php-msgpack \
+	&& tar -xvf php-msgpack.tgz -C /usr/src/php-msgpack --strip-components=1 \
+	&& cd /usr/src/php-msgpack \
+	&& phpize \
+	&& ./configure \
+	&& make -j"$(nproc)" \
+	&& make install \
+	&& rm -rf /usr/src/php-msgpack
 
 #
 # Redis

@@ -9,7 +9,7 @@ fi
 
 set -e
 
-sudo docker build $build_param --tag $IMAGE_NAME'_build' .
+sudo time docker build $build_param --tag $IMAGE_NAME'_build' .
 
 sudo docker tag -f $IMAGE_NAME'_build' $IMAGE_NAME
 
