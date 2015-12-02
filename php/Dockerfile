@@ -57,8 +57,8 @@ RUN ln -s /usr/include/x86_64-linux-gnu/gmp.h /usr/include/gmp.h
 # php source
 #
 RUN set -x \
-	&& wget -q "https://downloads.php.net/~ab/php-7.0.0RC7.tar.gz" -O php.tar.gz \
-	&& echo "ce20d42482ee97ce5e53cb8d5a5471ccbed738b4  php.tar.gz" | sha1sum -c \
+	&& wget -q "https://downloads.php.net/~ab/php-7.0.0RC8.tar.gz" -O php.tar.gz \
+	&& echo "df0e336dc076756ecc9c56e4b52624e40bc0897c  php.tar.gz" | sha1sum -c \
 	&& mkdir -p /usr/src/php \
 	&& tar -xvf php.tar.gz -C /usr/src/php --strip-components=1 \
 	&& rm php.tar.gz
