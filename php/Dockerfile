@@ -53,15 +53,23 @@ RUN apt-get install -y \
 
 RUN ln -s /usr/include/x86_64-linux-gnu/gmp.h /usr/include/gmp.h
 
+ENV GPG_KEYS 1A4E8B7277C42E53DBA9C7B9BCAA30EA9C0D5763 6E4F6AB321FDC07F2C332E3AC2BF0BC433CFC8B3
+RUN set -xe \
+	&& for key in $GPG_KEYS; do \
+		gpg --keyserver ha.pool.sks-keyservers.net --recv-keys "$key"; \
+	done
+
 #
 # php source
 #
 RUN set -x \
-	&& wget -q "https://downloads.php.net/~ab/php-7.0.0RC8.tar.gz" -O php.tar.gz \
-	&& echo "df0e336dc076756ecc9c56e4b52624e40bc0897c  php.tar.gz" | sha1sum -c \
+	&& wget -q "http://cn.php.net/get/php-7.0.0.tar.gz/from/this/mirror" -O php.tar.gz \
+	&& wget -q "http://cn.php.net/get/php-7.0.0.tar.gz.asc/from/this/mirror" -O php.tar.gz.asc \
+	&& gpg --verify php.tar.gz.asc \
 	&& mkdir -p /usr/src/php \
 	&& tar -xvf php.tar.gz -C /usr/src/php --strip-components=1 \
-	&& rm php.tar.gz
+	&& rm php.tar.gz \
+	&& rm php.tar.gz.asc
 
 #
 # configure && make

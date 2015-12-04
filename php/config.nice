@@ -19,6 +19,8 @@
 '--enable-sockets' \
 '--enable-mbstring' \
 '--enable-fileinfo' \
+'--enable-dom' \
+'--enable-xml' \
 '--with-iconv' \
 '--with-curl' \
 '--with-mcrypt' \
