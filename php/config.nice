@@ -6,7 +6,6 @@
 '--prefix=/usr' \
 '--disable-short-tags' \
 '--disable-all' \
-'--disable-cgi' \
 '--enable-fpm' \
 '--with-fpm-user=www-data' \
 '--with-fpm-group=www-data' \
@@ -21,6 +20,14 @@
 '--enable-fileinfo' \
 '--enable-dom' \
 '--enable-xml' \
+'--enable-opcache' \
+'--enable-phar' \
+'--enable-libxml' \
+'--enable-simplexml' \
+'--enable-sysvsem' \
+'--enable-sysvshm' \
+'--enable-pdo' \
+'--enable-mysqlnd' \
 '--with-iconv' \
 '--with-curl' \
 '--with-mcrypt' \
@@ -30,14 +37,7 @@
 '--with-readline' \
 '--with-gettext' \
 '--with-zlib' \
-'--enable-opcache' \
-'--enable-phar' \
-'--enable-libxml' \
-'--enable-simplexml' \
-'--enable-sysvsem' \
-'--enable-sysvshm' \
-'--enable-pdo' \
 '--with-pdo-mysql' \
-'--enable-mysqlnd' \
+'--with-openssl' \
 '--disable-mysqlnd-compression-support' \
 "$@"
