@@ -16,6 +16,8 @@ data_list=(
 	'mysql/conf'
 	'redis/log'
 	'redis/data'
+	'mongodb/log'
+	'mongodb/data'
 )
 
 for dir in ${data_list[@]}; do
@@ -46,6 +48,12 @@ sudo docker run \
 	redis:latest
 
 sudo docker run \
+	--name mongo \
+	-v /data/mongodb/data:/data/db \
+	-d \
+	mongo:latest
+
+sudo docker run \
 	--name mysql \
 	--env MYSQL_ROOT_PASSWORD=t1oPR58DJDg6nFM8 \
 	-v /data/mysql/log:/var/log/mysql \
@@ -58,6 +66,7 @@ sudo docker run \
 	--name php \
 	--link mysql:mysql \
 	--link memcache:memcache \
+	--link mongo:mongo \
 	-v /www:/www \
 	-v /data/php/log:/var/log/php \
 	-v /data/php/tmp:/tmp \

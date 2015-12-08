@@ -130,22 +130,15 @@ RUN git clone https://github.com/phpredis/phpredis.git -b php7 /usr/src/phpredis
 #
 # MongoDB
 #
-#RUN apt-get install -y libmongo-client-dev
-#RUN git clone https://github.com/mongodb-labs/mongo-php-driver-prototype.git -b PHP7 /usr/src/pecl-mongodb \
-#	&& cd /usr/src/pecl-mongodb \
-#	&& git submodule update --init \
-#	&& phpize \
-#	&& ./configure --without-openssl --without-mongodb-sasl \
-#	&& make -j"$(nproc)" \
-#	&& make install \
-#	&& rm -rf /usr/src/pecl-mongodb
-
-#	&& cd src/libbson \
-#	&& git pull origin master \
-#	&& cd ../.. \
-#	&& cd src/libmongoc \
-#	&& git pull origin master \
-#	&& cd ../.. \
+RUN apt-get install -y libmongo-client-dev
+RUN git clone https://github.com/mongodb-labs/mongo-php-driver-prototype.git -b PHP7 /usr/src/pecl-mongodb \
+	&& cd /usr/src/pecl-mongodb \
+	&& git submodule update --init \
+	&& phpize \
+	&& ./configure --without-openssl --without-mongodb-sasl \
+	&& make -j"$(nproc)" \
+	&& make install \
+	&& rm -rf /usr/src/pecl-mongodb
 
 #
 # clean
