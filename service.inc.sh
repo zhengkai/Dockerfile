@@ -1,7 +1,7 @@
 service_list=(
 	'memcache'
-	'redis'
-	'mongo'
+	#'redis'
+	#'mongo'
 	'mysql'
 	'php'
 	'nginx'

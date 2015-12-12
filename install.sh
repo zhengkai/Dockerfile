@@ -30,9 +30,9 @@ sudo chown zhengkai:zhengkai -R $data_base
 sudo mkdir -p /www
 # sudo chown zhengkai:zhengkai -R /www
 
-for service in ${service_list[@]}; do
-	sudo docker stop $service 2>/dev/null
-	sudo docker rm $service 2>/dev/null
+for ((i=${#service_list[@]}-1; i>=0; i--)); do
+	sudo docker stop ${service_list[$i]} 2>/dev/null
+	sudo docker rm ${service_list[$i]} 2>/dev/null
 done
 
 sudo docker run \
@@ -40,18 +40,18 @@ sudo docker run \
 	-d \
 	memcached:latest
 
-sudo docker run \
-	--name redis \
-	-v /data/redis/log:/var/log/redis \
-	-v /data/redis/data:/data \
-	-d \
-	redis:latest
+#sudo docker run \
+#	--name redis \
+#	-v /data/redis/log:/var/log/redis \
+#	-v /data/redis/data:/data \
+#	-d \
+#	redis:latest
 
-sudo docker run \
-	--name mongo \
-	-v /data/mongodb/data:/data/db \
-	-d \
-	mongo:latest
+#sudo docker run \
+#	--name mongo \
+#	-v /data/mongodb/data:/data/db \
+#	-d \
+#	mongo:latest
 
 sudo docker run \
 	--name mysql \
@@ -66,7 +66,6 @@ sudo docker run \
 	--name php \
 	--link mysql:mysql \
 	--link memcache:memcache \
-	--link mongo:mongo \
 	-v /www:/www \
 	-v /data/php/log:/var/log/php \
 	-v /data/php/tmp:/tmp \

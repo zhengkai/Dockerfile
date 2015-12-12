@@ -1,25 +1,24 @@
 FROM debian:jessie
 
-ENV PHP_INI_DIR            /etc/php
-ENV PHP_CONF_DIR           $PHP_INI_DIR/conf.d
+MAINTAINER Zheng Kai "zhengkai@gmail.com"
+
+ENV PHP_INI_DIR  /etc/php
+ENV PHP_CONF_DIR $PHP_INI_DIR/conf.d
 
 ENV DEBIAN_FRONTEND noninteractive
 
 RUN sed -i 's/^# deb/deb/g' /etc/apt/sources.list
-RUN cat /etc/apt/sources.list
 
 ENV TZ Asia/Shanghai
 RUN cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 RUN echo 'Asia/Shanghai' > /etc/timezone
 
-RUN apt-get update
-RUN apt-get install -y apt-utils
+RUN apt-get update \
+	&& apt-get install -y --no-install-recommends locales ca-certificates curl wget \
+	&& rm -r /var/lib/apt/lists/*
 
-RUN apt-get install -y locales
 RUN echo 'en_US.UTF-8 UTF-8' > /etc/locale.gen
 RUN locale-gen
-
-RUN apt-get install -y ca-certificates curl wget
 
 #
 # deps
@@ -41,15 +40,14 @@ ENV BUILD_DEPS \
 	libcurl4-openssl-dev \
 	libreadline6-dev \
 	libssl-dev \
+	libacl1-dev \
+	librecode-dev \
 	libxml2-dev \
 	libgmp-dev \
 	libmhash-dev \
-	libmcrypt-dev \
-	libmemcached-dev
-
-RUN apt-get install -y \
-	$PHPIZE_DEPS \
-	$BUILD_DEPS
+	libbz2-dev \
+	libtidy-dev \
+	libmcrypt-dev 
 
 RUN ln -s /usr/include/x86_64-linux-gnu/gmp.h /usr/include/gmp.h
 
@@ -60,24 +58,22 @@ RUN set -xe \
 	done
 
 #
-# php source
+# PHP
 #
+COPY config.shared /usr/src/php/config.shared
+
 RUN set -x \
+	&& apt-get update \
+	&& apt-get install -y --no-install-recommends $PHPIZE_DEPS $BUILD_DEPS \
 	&& wget -q "http://cn.php.net/get/php-7.0.0.tar.gz/from/this/mirror" -O php.tar.gz \
 	&& wget -q "http://cn.php.net/get/php-7.0.0.tar.gz.asc/from/this/mirror" -O php.tar.gz.asc \
 	&& gpg --verify php.tar.gz.asc \
 	&& mkdir -p /usr/src/php \
 	&& tar -xvf php.tar.gz -C /usr/src/php --strip-components=1 \
 	&& rm php.tar.gz \
-	&& rm php.tar.gz.asc
-
-#
-# configure && make
-#
-COPY config.nice /usr/src/php/config.nice
-
-RUN cd /usr/src/php \
-	&& ./config.nice \
+	&& rm php.tar.gz.asc \
+	&& cd /usr/src/php \
+	&& ./config.shared \
 		"--sysconfdir=$PHP_INI_DIR" \
 		"--with-config-file-path=$PHP_INI_DIR" \
 		"--with-config-file-scan-dir=$PHP_CONF_DIR" \
@@ -85,28 +81,33 @@ RUN cd /usr/src/php \
 	&& strip --strip-all /usr/src/php/sapi/fpm/php-fpm \
 	&& strip --strip-all /usr/src/php/sapi/cli/php \
 	&& make install \
-	&& apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false -o APT::AutoRemove::SuggestsImportant=false $buildDeps
+	&& apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false -o APT::AutoRemove::SuggestsImportant=false $PHPIZE_DEPS \ 
+	&& rm -r /var/lib/apt/lists/* \
+	&& rm -r /usr/src/php
 
-#
-# ImageMagick
-#
-RUN apt-get install -y imagemagick
+RUN php -m
 
 #
 # Memcached
 #
-RUN git clone https://github.com/php-memcached-dev/php-memcached.git -b php7 /usr/src/php-memcached \
+RUN apt-get update \ 
+	&& apt-get install -y --no-install-recommends libz-dev libmemcached-dev $PHPIZE_DEPS \
+	&& git clone https://github.com/php-memcached-dev/php-memcached.git -b php7 /usr/src/php-memcached \
 	&& cd /usr/src/php-memcached \
 	&& phpize \
 	&& ./configure --disable-memcached-session --disable-memcached-sasl \
 	&& make -j"$(nproc)" \
 	&& make install \
-	&& rm -rf /usr/src/php-memcached
+	&& apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false -o APT::AutoRemove::SuggestsImportant=false libz-dev libmemcached-dev $PHPIZE_DEPS \ 
+	&& rm -r /var/lib/apt/lists/* \
+	&& rm -r /usr/src/php-memcached
 
 #
 # Msgpack
 #
-RUN wget -q "http://pecl.php.net/get/msgpack-2.0.0.tgz" -O php-msgpack.tgz \
+RUN apt-get update \
+	&& apt-get install -y --no-install-recommends $PHPIZE_DEPS \
+	&& wget -q "http://pecl.php.net/get/msgpack-2.0.0.tgz" -O php-msgpack.tgz \
 	&& mkdir /usr/src/php-msgpack \
 	&& tar -xvf php-msgpack.tgz -C /usr/src/php-msgpack --strip-components=1 \
 	&& cd /usr/src/php-msgpack \
@@ -114,39 +115,47 @@ RUN wget -q "http://pecl.php.net/get/msgpack-2.0.0.tgz" -O php-msgpack.tgz \
 	&& ./configure \
 	&& make -j"$(nproc)" \
 	&& make install \
-	&& rm -rf /usr/src/php-msgpack
+	&& apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false -o APT::AutoRemove::SuggestsImportant=false $PHPIZE_DEPS \ 
+	&& rm -r /var/lib/apt/lists/* \
+	&& rm -r /usr/src/php-msgpack
 
 #
 # Redis
 #
-RUN git clone https://github.com/phpredis/phpredis.git -b php7 /usr/src/phpredis \
+RUN apt-get update \
+	&& apt-get install -y --no-install-recommends $PHPIZE_DEPS \
+	&& git clone https://github.com/phpredis/phpredis.git -b php7 /usr/src/phpredis \
 	&& cd /usr/src/phpredis \
 	&& phpize \
 	&& ./configure --disable-redis-session \
 	&& make -j"$(nproc)" \
 	&& make install \
-	&& rm -rf /usr/src/phpredis
+	&& apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false -o APT::AutoRemove::SuggestsImportant=false $PHPIZE_DEPS \ 
+	&& rm -r /usr/src/phpredis
 
 #
 # MongoDB
 #
-RUN apt-get install -y libmongo-client-dev
-RUN git clone https://github.com/mongodb-labs/mongo-php-driver-prototype.git -b PHP7 /usr/src/pecl-mongodb \
+RUN apt-get update \
+	&& apt-get install -y --no-install-recommends libsasl2-dev libssl-dev $PHPIZE_DEPS \
+	&& git clone https://github.com/mongodb-labs/mongo-php-driver-prototype.git -b PHP7 /usr/src/pecl-mongodb \
 	&& cd /usr/src/pecl-mongodb \
 	&& git submodule update --init \
 	&& phpize \
-	&& ./configure --without-openssl --without-mongodb-sasl \
+	&& ./configure --without-mongodb-sasl \
 	&& make -j"$(nproc)" \
 	&& make install \
-	&& rm -rf /usr/src/pecl-mongodb
+	&& apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false -o APT::AutoRemove::SuggestsImportant=false libsasl2-dev libssl-dev $PHPIZE_DEPS \ 
+	&& apt-get -y autoremove \
+	&& rm -r /var/lib/apt/lists/* \
+	&& rm -r /usr/src/pecl-mongodb
 
 #
-# clean
+# ImageMagick
 #
-RUN apt-get purge -y $PHPIZE_DEPS 
-RUN apt-get -y autoremove
-RUN rm -rf /var/lib/apt/lists/*
-RUN rm -rf /usr/src/php
+RUN apt-get update \
+	&& apt-get install -y --no-install-recommends imagemagick \
+	&& rm -r /var/lib/apt/lists/* 
 
 ADD etc/* $PHP_INI_DIR/
 ADD etc/conf.d/* $PHP_CONF_DIR/

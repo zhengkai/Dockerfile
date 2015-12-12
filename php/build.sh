@@ -1,4 +1,6 @@
 #! /bin/bash
+sudo docker pull debian:jessie
+
 cd $(dirname `readlink -f $0`)
 . ./name.inc.sh
 
