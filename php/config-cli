@@ -3,16 +3,15 @@
 # Created by configure
 
 './configure' \
-'--sysconfdir=/etc/php7' \
-'--with-config-file-path=/etc/php7' \
-'--with-config-file-scan-dir=/etc/php7/conf.d' \
 '--prefix=/usr' \
 '--mandir=/usr/share/man' \
+'--sysconfdir=/etc/php/cli' \
+'--with-config-file-path=/etc/php/cli' \
+'--with-config-file-scan-dir=/etc/php/cli/conf.d' \
 '--disable-short-tags' \
 '--disable-all' \
-'--enable-fpm' \
-'--with-fpm-user=www-data' \
-'--with-fpm-group=www-data' \
+'--disable-cgi' \
+'--disable-fpm' \
 '--enable-cli' \
 '--enable-session=shared' \
 '--enable-posix=shared' \
@@ -42,6 +41,7 @@
 '--enable-sysvshm=shared' \
 '--enable-pdo=shared' \
 '--enable-mysqlnd=shared' \
+'--enable-ctype=shared' \
 '--with-iconv=shared' \
 '--with-xmlrpc=shared' \
 '--with-curl=shared' \
@@ -57,7 +57,6 @@
 '--with-pdo-mysql=shared' \
 '--with-openssl=shared' \
 '--with-system-ciphers' \
-'--enable-ctype=shared' \
 '--with-bz2=shared' \
 '--with-recode=shared' \
 '--without-pear' \
