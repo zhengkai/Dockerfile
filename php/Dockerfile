@@ -65,8 +65,8 @@ COPY config-cli /usr/src/php/config-cli
 RUN set -x \
 	&& apt-get update \
 	&& apt-get install -y --no-install-recommends $PHPIZE_DEPS $BUILD_DEPS \
-	&& wget -q "http://cn.php.net/get/php-7.0.0.tar.gz/from/this/mirror" -O php.tar.gz \
-	&& wget -q "http://cn.php.net/get/php-7.0.0.tar.gz.asc/from/this/mirror" -O php.tar.gz.asc \
+	&& wget -q "http://cn.php.net/get/php-7.0.1.tar.gz/from/this/mirror" -O php.tar.gz \
+	&& wget -q "http://cn.php.net/get/php-7.0.1.tar.gz.asc/from/this/mirror" -O php.tar.gz.asc \
 	&& gpg --verify php.tar.gz.asc \
 	&& mkdir -p /usr/src/php \
 	&& tar -xvf php.tar.gz -C /usr/src/php --strip-components=1 \
