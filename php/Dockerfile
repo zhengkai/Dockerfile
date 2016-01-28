@@ -65,8 +65,8 @@ COPY config-cli /usr/src/php/config-cli
 RUN set -x \
 	&& apt-get update \
 	&& apt-get install -y --no-install-recommends $PHPIZE_DEPS $BUILD_DEPS \
-	&& wget -q "http://cn.php.net/get/php-7.0.1.tar.gz/from/this/mirror" -O php.tar.gz \
-	&& wget -q "http://cn.php.net/get/php-7.0.1.tar.gz.asc/from/this/mirror" -O php.tar.gz.asc \
+	&& wget -q "http://cn.php.net/get/php-7.0.2.tar.gz/from/this/mirror" -O php.tar.gz \
+	&& wget -q "http://cn.php.net/get/php-7.0.2.tar.gz.asc/from/this/mirror" -O php.tar.gz.asc \
 	&& gpg --verify php.tar.gz.asc \
 	&& mkdir -p /usr/src/php \
 	&& tar -xvf php.tar.gz -C /usr/src/php --strip-components=1 \
@@ -141,9 +141,10 @@ RUN apt-get update \
 #
 RUN apt-get update \
 	&& apt-get install -y --no-install-recommends libsasl2-dev libssl-dev git $PHPIZE_DEPS \
-	&& git clone https://github.com/mongodb-labs/mongo-php-driver-prototype.git -b PHP7 /usr/src/pecl-mongodb \
-	&& cd /usr/src/pecl-mongodb \
-	&& git submodule update --init \
+	&& wget -q "https://pecl.php.net/get/mongodb-1.1.2.tgz" -O php-mongodb.tgz \
+	&& mkdir /usr/src/php-mongodb \
+	&& tar -xvf php-mongodb.tgz -C /usr/src/php-mongodb --strip-components=1 \
+	&& cd /usr/src/php-mongodb \
 	&& phpize \
 	&& ./configure --without-mongodb-sasl \
 	&& make -j"$(nproc)" \
@@ -152,14 +153,14 @@ RUN apt-get update \
 	&& apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false -o APT::AutoRemove::SuggestsImportant=false libsasl2-dev libssl-dev git $PHPIZE_DEPS \
 	&& apt-get -y autoremove \
 	&& rm -r /var/lib/apt/lists/* \
-	&& rm -r /usr/src/pecl-mongodb
+	&& rm -r /usr/src/php-mongodb
 
 #
 # Xdebug
 #
 RUN apt-get update \
 	&& apt-get install -y --no-install-recommends $PHPIZE_DEPS \
-	&& wget -q "http://xdebug.org/files/xdebug-2.4.0rc3.tgz" -O php-xdebug.tgz \
+	&& wget -q "http://xdebug.org/files/xdebug-2.4.0rc4.tgz" -O php-xdebug.tgz \
 	&& mkdir /usr/src/php-xdebug \
 	&& tar -xvf php-xdebug.tgz -C /usr/src/php-xdebug --strip-components=1 \
 	&& cd /usr/src/php-xdebug \
